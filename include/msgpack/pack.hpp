@@ -3,17 +3,9 @@
 //
 // Copyright (C) 2008-2013 FURUHASHI Sadayuki and KONDO Takatoshi
 //
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
+//    Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//    http://www.boost.org/LICENSE_1_0.txt)
 //
 #ifndef MSGPACK_PACK_HPP
 #define MSGPACK_PACK_HPP
@@ -149,7 +141,7 @@ inline void pack(Stream& s, const T& v)
 }
 
 
-#if defined(__LITTLE_ENDIAN__)
+#if MSGPACK_ENDIAN_LITTLE_BYTE
 template <typename T>
 inline char take8_8(T d) {
     return static_cast<char>(reinterpret_cast<uint8_t*>(&d)[0]);
@@ -167,7 +159,7 @@ inline char take8_64(T d) {
     return static_cast<char>(reinterpret_cast<uint8_t*>(&d)[0]);
 }
 
-#elif defined(__BIG_ENDIAN__)
+#elif MSGPACK_ENDIAN_BIG_BYTE
 
 template <typename T>
 inline char take8_8(T d) {
@@ -186,6 +178,8 @@ inline char take8_64(T d) {
     return static_cast<char>(reinterpret_cast<uint8_t*>(&d)[7]);
 }
 
+#else
+#error msgpack-c supports only big endian and little endian
 #endif
 
 template <typename Stream>
@@ -691,7 +685,7 @@ template <typename Stream>
 inline packer<Stream>& packer<Stream>::pack_str(uint32_t l)
 {
     if(l < 32) {
-        unsigned char d = 0xa0u | static_cast<uint8_t>(l);
+        unsigned char d = static_cast<uint8_t>(0xa0u | l);
         char buf = take8_8(d);
         append_buffer(&buf, 1);
     } else if(l < 256) {
@@ -723,7 +717,7 @@ template <typename Stream>
 inline packer<Stream>& packer<Stream>::pack_v4raw(uint32_t l)
 {
     if(l < 32) {
-        unsigned char d = 0xa0u | static_cast<uint8_t>(l);
+        unsigned char d = static_cast<uint8_t>(0xa0u | l);
         char buf = take8_8(d);
         append_buffer(&buf, 1);
     } else if(l < 65536) {

@@ -3,17 +3,9 @@
 //
 // Copyright (C) 2008-2015 FURUHASHI Sadayuki and KONDO Takatoshi
 //
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
+//    Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//    http://www.boost.org/LICENSE_1_0.txt)
 //
 #ifndef MSGPACK_CPP11_MSGPACK_TUPLE_HPP
 #define MSGPACK_CPP11_MSGPACK_TUPLE_HPP
@@ -37,7 +29,6 @@ namespace type {
     using std::tuple_element;
     using std::uses_allocator;
     using std::ignore;
-    using std::tie;
     using std::swap;
 
     template< class... Types >
@@ -72,11 +63,11 @@ namespace type {
 
         template< std::size_t I>
         typename tuple_element<I, base >::type&
-        get() { return std::get<I>(*this); }
+        get() & { return std::get<I>(*this); }
 
         template< std::size_t I>
         typename tuple_element<I, base >::type const&
-        get() const { return std::get<I>(*this); }
+        get() const& { return std::get<I>(*this); }
 
         template< std::size_t I>
         typename tuple_element<I, base >::type&&
@@ -99,6 +90,10 @@ namespace type {
             std::tuple_cat(std::forward<typename std::remove_reference<Tuples>::type::base>(args)...)
         ) {
         return std::tuple_cat(std::forward<typename std::remove_reference<Tuples>::type::base>(args)...);
+    }
+    template <class... Args>
+    inline tuple<Args&...> tie(Args&... args) {
+        return tuple<Args&...>(args...);
     }
 } // namespace type
 

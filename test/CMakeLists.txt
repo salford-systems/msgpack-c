@@ -8,6 +8,7 @@ INCLUDE_DIRECTORIES (
 )
 
 LIST (APPEND check_PROGRAMS
+    array_ref.cpp
     buffer.cpp
     cases.cpp
     convert.cpp
@@ -37,6 +38,7 @@ LIST (APPEND check_PROGRAMS
 IF (MSGPACK_BOOST)
     LIST (APPEND check_PROGRAMS
         boost_fusion.cpp
+        boost_variant.cpp
         boost_optional.cpp
         boost_string_ref.cpp
     )
@@ -46,10 +48,17 @@ IF (MSGPACK_CXX11)
     LIST (APPEND check_PROGRAMS
         iterator_cpp11.cpp
         msgpack_cpp11.cpp
+        reference_cpp11.cpp
+        reference_wrapper_cpp11.cpp
         shared_ptr_cpp11.cpp
         unique_ptr_cpp11.cpp
-        reference_cpp11.cpp
     )
+ENDIF ()
+
+IF (MSGPACK_ENABLE_SHARED)
+    SET (MSGPACK_TEST_LIB msgpack)
+ELSE ()
+    SET (MSGPACK_TEST_LIB msgpack-static)
 ENDIF ()
 
 FOREACH (source_file ${check_PROGRAMS})
@@ -59,7 +68,7 @@ FOREACH (source_file ${check_PROGRAMS})
         ${source_file}
     )
     TARGET_LINK_LIBRARIES (${source_file_we}
-        msgpack
+        ${MSGPACK_TEST_LIB}
         ${GTEST_BOTH_LIBRARIES}
         ${ZLIB_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
@@ -69,8 +78,8 @@ FOREACH (source_file ${check_PROGRAMS})
         SET_PROPERTY (TARGET ${source_file_we} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wall -Wextra -Werror -Wno-mismatched-tags -g -O3")
     ENDIF ()
     IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        IF (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-            STRING(REGEX REPLACE "/W[0-4]" "/W3" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        IF (CMAKE_CXX_FLAGS MATCHES "/W[0-4] /WX")
+            STRING(REGEX REPLACE "/W[0-4]" "/W3 /WX" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         ELSE ()
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
         ENDIF ()

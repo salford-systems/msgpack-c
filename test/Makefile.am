@@ -1,8 +1,9 @@
-AM_CPPFLAGS   = -I$(top_srcdir)/include
-AM_C_CPPFLAGS = -I$(top_srcdir)/include
-AM_LDFLAGS = $(top_builddir)/src/libmsgpack.la -lgtest_main -lgtest -pthread
+AM_CPPFLAGS   = -I$(top_srcdir)/include -pthread
+AM_C_CPPFLAGS = -I$(top_srcdir)/include -pthread
+AM_LDFLAGS = $(top_builddir)/src/libmsgpack.la -lgtest_main -lgtest -lpthread
 
 check_PROGRAMS = \
+		array_ref \
 		buffer \
 		cases \
 		convert \
@@ -30,6 +31,7 @@ check_PROGRAMS = \
 
 check_PROGRAMS += \
 		boost_fusion \
+		boost_variant \
 		boost_optional \
 		boost_string_ref
 
@@ -37,6 +39,7 @@ check_PROGRAMS += \
 		iterator_cpp11 \
 		msgpack_cpp11 \
 		reference_cpp11 \
+		reference_wrapper_cpp11 \
 		shared_ptr_cpp11 \
 		unique_ptr_cpp11
 
@@ -45,6 +48,7 @@ check_PROGRAMS += \
 
 TESTS = $(check_PROGRAMS)
 
+array_ref_SOURCES = array_ref.cpp
 buffer_SOURCES = buffer.cpp
 cases_SOURCES = cases.cpp
 convert_SOURCES = convert.cpp
@@ -73,10 +77,12 @@ zone_SOURCES = zone.cpp
 iterator_cpp11_SOURCES = iterator_cpp11.cpp
 msgpack_cpp11_SOURCES = msgpack_cpp11.cpp
 reference_cpp11_SOURCES = reference_cpp11.cpp
+reference_wrapper_cpp11_SOURCES = reference_wrapper_cpp11.cpp
 shared_ptr_cpp11_SOURCES = shared_ptr_cpp11.cpp
 unique_ptr_cpp11_SOURCES = unique_ptr_cpp11.cpp
 
 boost_fusion_SOURCES = boost_fusion.cpp
+boost_variant_SOURCES = boost_variant.cpp
 boost_optional_SOURCES = boost_optional.cpp
 boost_string_ref_SOURCES = boost_string_ref.cpp
 
@@ -84,4 +90,4 @@ multi_file_SOURCES = multi_file1.cpp multi_file2.cpp
 
 buffer_LDADD = -lz
 
-EXTRA_DIST = cases.mpac cases_compact.mpac
+EXTRA_DIST = cases.mpac cases_compact.mpac test_allocator.hpp
